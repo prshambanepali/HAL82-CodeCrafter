@@ -3,52 +3,280 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Intern Seeker Dashboard</title>
+  <title>Intern Dashboard • UdyamTank</title>
   <link rel="stylesheet" href="../assets/css/styles.css"/>
 </head>
-<body>
-  <section class="dashboard-wrapper">
-    <div class="dashboard-card">
-      <div class="dash-top">
-        <div>
-          <h2 class="dash-title">Intern Seeker Home</h2>
-          <p id="status" class="dash-sub">Loading...</p>
-        </div>
-        <button id="logout" class="btn logout-btn">Logout</button>
-      </div>
 
-      <div class="profile-box">
-        <img id="avatar" alt="avatar" />
-        <div class="profile-meta">
-          <div id="name" class="name">—</div>
-          <div id="email" class="email">—</div>
-          <div id="role" class="provider">—</div>
-        </div>
-      </div>
+<body class="intern">
 
-      <div class="dashboard-grid">
-        <div class="dash-panel">
-          <h3>Intern seeker tools</h3>
-          <p>Find internships, build your profile, and track applications.</p>
-          <div class="actions">
-            <a class="action" href="#">Search Internships</a>
-            <a class="action" href="#">My Applications</a>
-            <a class="action" href="#">My Profile</a>
-          </div>
-        </div>
+  <!-- Top Nav (same brand style) -->
+  <header class="intern-nav">
+    <div class="intern-nav-inner">
+      <a class="intern-brand" href="../index.html">
+        <img src="../../logo.jpg" width="100" height="100">
+        <span>UdyamTank</span>
+      </a>
 
-        <div class="dash-panel">
-          <h3>Quick info</h3>
-          <div class="info">
-            <div class="info-row"><span>Role</span><b>INTERN_SEEKER</b></div>
-            <div class="info-row"><span>Status</span><b>Active</b></div>
-          </div>
-        </div>
+      <div class="intern-nav-actions">
+        <a class="intern-nav-link" href="#">Dashboard</a>
+        <button class="intern-icon-btn" type="button" aria-label="Toggle theme">🌙</button>
+        <button id="logout" class="intern-logout" type="button">Logout</button>
       </div>
     </div>
-  </section>
+  </header>
 
-  <div id="toast" class="toast"></div>
-  <script type="module" src="../js/role-dashboard.js"></script>
+  <main class="intern-wrap">
+
+    <!-- Header -->
+    <section class="intern-head">
+      <h1 class="intern-title">Intern Dashboard</h1>
+      <p class="intern-sub">Build your profile and apply to exciting startups</p>
+
+      <!-- Tabs -->
+      <div class="intern-tabs" role="tablist" aria-label="Intern sections">
+        <button class="tab-btn active" data-tab="profile" type="button">My Profile</button>
+        <button class="tab-btn" data-tab="browse" type="button">Browse Startups</button>
+        <button class="tab-btn" data-tab="apps" type="button">My Applications</button>
+      </div>
+    </section>
+
+    <!-- =======================
+         TAB: MY PROFILE
+    ======================== -->
+    <section id="tab-profile" class="tab-pane show">
+      <div class="intern-card">
+        <div class="intern-card-title">Create Your Intern Profile</div>
+
+        <form class="intern-form" id="internProfileForm">
+          <div class="grid-2">
+            <div class="fieldbox">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" placeholder="Your full name" required />
+            </div>
+
+            <div class="fieldbox">
+              <label>Headline</label>
+              <input type="text" placeholder="e.g. CS Student | React Developer" />
+            </div>
+          </div>
+
+          <div class="fieldbox">
+            <label>Bio</label>
+            <textarea rows="4" placeholder="Tell startups about yourself..."></textarea>
+          </div>
+
+          <div class="grid-3">
+            <div class="fieldbox">
+              <label>University</label>
+              <input type="text" placeholder="Your university" />
+            </div>
+
+            <div class="fieldbox">
+              <label>Graduation Year</label>
+              <input type="number" placeholder="2026" />
+            </div>
+
+            <div class="fieldbox">
+              <label>Location</label>
+              <input type="text" placeholder="City, Country" />
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="fieldbox">
+              <label>Portfolio URL</label>
+              <input type="url" placeholder="https://..." />
+            </div>
+
+            <div class="fieldbox">
+              <label>LinkedIn URL</label>
+              <input type="url" placeholder="https://..." />
+            </div>
+
+            <div class="fieldbox">
+              <label>GitHub URL</label>
+              <input type="url" placeholder="https://..." />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="fieldbox">
+              <label>Availability</label>
+              <select>
+                <option>Immediately</option>
+                <option>In 2 weeks</option>
+                <option>In 1 month</option>
+              </select>
+            </div>
+
+            <div class="fieldbox">
+              <label>Hours per Week</label>
+              <input type="number" placeholder="20" />
+            </div>
+          </div>
+
+          <div class="checks">
+            <label class="check">
+              <input type="checkbox" checked />
+              <span>Open to Remote</span>
+            </label>
+            <label class="check">
+              <input type="checkbox" />
+              <span>Paid internships only</span>
+            </label>
+          </div>
+
+          <div class="skill-row">
+            <div class="fieldbox grow">
+              <label>Skills <span class="hint">*</span></label>
+              <input type="text" placeholder="e.g. React, Python, UI Design..." />
+            </div>
+            <button class="mini-plus" type="button" aria-label="Add skill">+</button>
+          </div>
+
+          <div class="fieldbox">
+            <label>Industries of Interest</label>
+            <select>
+              <option value="">Add an industry...</option>
+              <option>Fintech</option>
+              <option>Health</option>
+              <option>Education</option>
+              <option>AI / ML</option>
+              <option>E-commerce</option>
+            </select>
+          </div>
+
+          <button class="intern-primary" type="submit">
+            <span class="ic">☰</span>
+            Create Profile
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- =======================
+         TAB: BROWSE STARTUPS
+    ======================== -->
+    <section id="tab-browse" class="tab-pane">
+      <div class="intern-muted-line">Startups sorted by match with your skills and interests</div>
+
+      <div class="browse-grid">
+        <!-- Example card -->
+        <article class="startup-mini">
+          <div class="startup-top">
+            <div class="startup-logo">F</div>
+            <div class="startup-top-meta">
+              <div class="startup-name">
+                Fintrek <span class="match-pill">↗ 1</span>
+              </div>
+              <div class="startup-sub">Smart budgeting for Gen Z, built by Gen Z</div>
+            </div>
+          </div>
+
+          <p class="startup-desc">
+            Fintrek gamifies personal finance for 18-26 year olds. Users set goals, earn coins for smart...
+          </p>
+
+          <div class="tag-row">
+            <span class="tag amber">Early Traction</span>
+            <span class="tag violet">Remote</span>
+          </div>
+
+          <div class="chip-row">
+            <span class="chip2">React Native Developer</span>
+            <span class="chip2">Backend Engineer</span>
+            <span class="chip2">Growth Hacker</span>
+          </div>
+
+          <div class="startup-bottom">
+            <div class="startup-loc">📍 New York, NY</div>
+            <button class="apply-btn" type="button">Apply</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- =======================
+         TAB: MY APPLICATIONS
+    ======================== -->
+    <section id="tab-apps" class="tab-pane">
+      <div class="apps-note">
+        Showing sample applications — create your profile and apply to see your own here.
+      </div>
+
+      <div class="apps-list">
+        <!-- Sample rows -->
+        <div class="app-row">
+          <div class="app-left">
+            <div class="app-logo">F</div>
+            <div class="app-meta">
+              <div class="app-name">
+                Fintrek <span class="app-status reviewing">Reviewing</span>
+                <span class="app-score">★ 4</span>
+              </div>
+              <div class="app-text">"React Native is my primary stack and I've built a personal budgeting app as a side project..."</div>
+            </div>
+          </div>
+          <div class="app-right">
+            <button class="app-ic" aria-label="Info">ⓘ</button>
+          </div>
+        </div>
+
+        <div class="app-row">
+          <div class="app-left">
+            <div class="app-logo">F</div>
+            <div class="app-meta">
+              <div class="app-name">
+                Fintrek <span class="app-status rejected">Rejected</span>
+                <span class="app-score">★ 3</span>
+              </div>
+              <div class="app-text">"Gen Z finance content is something I’ve been creating for my personal Instagram..."</div>
+            </div>
+          </div>
+          <div class="app-right">
+            <button class="app-ic danger" aria-label="Rejected">✕</button>
+          </div>
+        </div>
+
+        <div class="app-row">
+          <div class="app-left">
+            <div class="app-logo">N</div>
+            <div class="app-meta">
+              <div class="app-name">
+                NeuralNest <span class="app-status accepted">Accepted</span>
+                <span class="app-score">★ 7</span>
+              </div>
+              <div class="app-text">"My final-year project is an adaptive quiz generator using transformer models..."</div>
+            </div>
+          </div>
+          <div class="app-right">
+            <button class="app-ic ok" aria-label="Accepted">✓</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Small tab switch script -->
+  <script>
+    const tabs = document.querySelectorAll(".tab-btn");
+    const panes = {
+      profile: document.getElementById("tab-profile"),
+      browse: document.getElementById("tab-browse"),
+      apps: document.getElementById("tab-apps"),
+    };
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabs.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        Object.values(panes).forEach(p => p.classList.remove("show"));
+        panes[btn.dataset.tab].classList.add("show");
+      });
+    });
+  </script>
+
 </body>
 </html>

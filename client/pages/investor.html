@@ -6,39 +6,121 @@
   <title>Investor Dashboard</title>
   <link rel="stylesheet" href="../assets/css/styles.css"/>
 </head>
-<body>
-  <section class="dashboard-wrapper">
-    <div class="dashboard-card">
-      <div class="dash-top">
-        <div>
-          <h2 class="dash-title">Investor Home</h2>
-          <p id="status" class="dash-sub">Loading...</p>
-        </div>
-        <button id="logout" class="btn logout-btn">Logout</button>
+
+<body class="investor">
+
+  <!-- TOP NAV -->
+  <header class="inv-nav">
+    <div class="inv-nav-inner">
+      <a class="inv-brand" href="../index.html">
+        <img src="../../logo.jpg" width="100" height="100">
+        <!-- <span class="inv-logo">↗</span> -->
+        <span>UdyamTank</span>
+      </a>
+
+      <div class="inv-actions">
+        <a class="inv-link" href="#">Dashboard</a>
+        <button class="inv-icon" type="button" aria-label="Toggle theme">🌙</button>
+        <button id="logout" class="inv-logout">Logout</button>
       </div>
-
-      <div class="profile-box">
-        <img id="avatar" alt="avatar" />
-        <div class="profile-meta">
-          <div id="name" class="name">—</div>
-          <div id="email" class="email">—</div>
-          <div id="role" class="provider">—</div>
-        </div>
-      </div>
-
-   <div class="dashboard-grid">
-
-  <div class="dash-panel">
-    <h3>Startup Ideas Feed</h3>
-
-    <!-- 👇 PUT IT HERE -->
-    <div id="feed"></div>
-
-  </div>
-
-</div>
     </div>
-  </section>
+  </header>
+
+  <!-- PAGE -->
+  <main class="inv-wrap">
+
+    <!-- Header row -->
+    <section class="inv-head">
+      <div>
+        <h1 class="inv-title">Investor Dashboard</h1>
+        <div class="inv-status">
+          <span id="status">Loading...</span>
+          <!-- <span class="inv-check">✅</span> -->
+        </div>
+      </div>
+
+      <!-- profile pill -->
+      <div class="inv-profile">
+        <div class="inv-avatar">
+          <img id="avatar" alt="avatar" />
+          <span class="inv-avatar-fallback">H</span>
+        </div>
+
+        <div class="inv-profile-meta">
+          <div id="name" class="inv-name">—</div>
+          <div id="email" class="inv-email">—</div>
+          <div id="role" class="inv-role">—</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="inv-tabs">
+      <button class="inv-tab inv-tab-active" type="button">▦ Project Pitches</button>
+      <button class="inv-tab" type="button">☆ Recommended</button>
+      <button class="inv-tab" type="button">🔖 Saved</button>
+      <button class="inv-tab" type="button">⚙ Preferences</button>
+    </nav>
+
+    <!-- Filter card -->
+    <section class="inv-filter">
+      <div class="inv-filter-top">
+        <h2>Filter Projects</h2>
+        <button class="inv-reset" type="button">Reset All</button>
+      </div>
+
+      <div class="inv-filter-grid">
+        <label class="inv-field">
+          <span>Industry</span>
+          <select>
+            <option>All Industries</option>
+            <option>Technology</option>
+            <option>Healthcare</option>
+            <option>FinTech</option>
+          </select>
+        </label>
+
+        <label class="inv-field">
+          <span>Funding Stage</span>
+          <select>
+            <option>All Stages</option>
+            <option>Pre-seed</option>
+            <option>Seed</option>
+            <option>Series A</option>
+          </select>
+        </label>
+
+        <label class="inv-field">
+          <span>Risk Level</span>
+          <select>
+            <option>All Levels</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+          </select>
+        </label>
+
+        <label class="inv-field">
+          <span>Funding Goal</span>
+          <select>
+            <option>Any Amount</option>
+            <option>$10K – $50K</option>
+            <option>$50K – $250K</option>
+            <option>$250K+</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="inv-search">
+        <span class="inv-search-ic">🔎</span>
+        <input type="text" placeholder="Search startups by name or keyword..." />
+      </div>
+    </section>
+
+    <!-- Projects Grid (your JS will render cards into #feed) -->
+    <section class="inv-grid" id="feed"></section>
+
+  </main>
 
   <div id="toast" class="toast"></div>
   <script type="module" src="../js/investor-page.js"></script>

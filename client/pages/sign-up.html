@@ -3,98 +3,65 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Sign Up - UdyamTank</title>
+  <title>Sign Up • UdyamTank</title>
   <link rel="stylesheet" href="../assets/css/styles.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body class="auth-body">
-  <!-- Navigation -->
-  <nav class="navigation">
-    <div class="nav-container">
-      <div class="nav-content">
-        <a href="../index.html" class="logo">
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="logo-icon">
-            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-            <polyline points="16 7 22 7 22 13"></polyline>
-          </svg>
-          <span class="logo-text">UdyamTank</span>
-        </a>
 
-        <div class="nav-actions">
-          <a href="log-in.html" class="nav-link">Login</a>
-          <button class="theme-toggle" aria-label="Toggle theme">
-            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </button>
-        </div>
+<body class="auth">
+
+  <!-- NAVBAR -->
+  <header class="auth-nav">
+    <div class="auth-nav-inner">
+      <a class="auth-brand" href="../index.html">
+        <img src="../../logo.jpg" width="100" height="100">
+        <span>UdyamTank</span>
+      </a>
+
+      <div class="auth-nav-actions">
+        <a class="auth-nav-link" href="sign-in.html">Login</a>
+        <button class="auth-icon-btn" type="button" aria-label="Toggle theme">🌙</button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- Auth Section -->
-  <div class="auth-section">
-    <div class="auth-container">
-      <div class="auth-header">
-        <h1>Join UdyamTank</h1>
-        <p>Create your account in seconds</p>
-      </div>
+  <main class="auth-page">
+    <h1 class="auth-title">Join UdyamTank</h1>
+    <p class="auth-sub">Create your account</p>
 
-      <section class="card auth-card">
-        <h2>Sign Up</h2>
-        <p>Create account using email/password or Google.</p>
+    <section class="auth-card">
+      <h2 class="auth-card-title">Sign Up</h2>
+      <!-- <p class="auth-card-desc">Create account using email/password or Google.</p> -->
 
-        <input id="full_name" type="text" placeholder="Full name (optional)" />
-        <input id="email" type="email" placeholder="Email address" style="margin-top: 8px;" />
-        <input id="password" type="password" placeholder="Password (min 6 chars)" style="margin-top: 8px;" />
+      <div class="auth-form">
+        <input id="full_name" type="text" placeholder="Full name" />
+        <input id="email" type="email" placeholder="Email address" />
+        <input id="password" type="password" placeholder="Password (min 6 chars)" />
 
-        <select id="role">
-          <option value="" selected disabled>Select account type</option>
-          <option value="INVESTOR">Investor</option>
-          <option value="STARTUP">Startup Personnel</option>
-          <option value="INTERN_SEEKER">Intern Seeker</option>
-          <option value="INFLUENCER">Influencer</option>
-        </select>
+<select id="role">
+  <option value="">Select account type</option>
+  <option value="STARTUP">Startup</option>
+  <option value="INVESTOR">Investor</option>
+  <option value="INTERN_SEEKER">Intern Seeker</option>
+  <option value="INFLUENCER">Influencer</option>
+</select>
 
-        <button id="signupBtn" class="btn">Create Account</button>
+        <button id="signupBtn" class="auth-btn">Create Account</button>
 
-        <div class="sep">OR</div>
-
-        <div class="google-wrap">
+        <!-- Optional Google -->
+        <div class="auth-google-wrap">
           <div id="googleBtn"></div>
         </div>
 
-        <div class="link link-center">
+        <div class="auth-footer">
           Already have an account? <a href="sign-in.html">Login</a>
         </div>
-      </section>
-
-      <div class="auth-footer">
-        <a href="../index.html" class="back-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Back to Home
-        </a>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <a class="auth-back" href="../index.html">← Back to Home</a>
+  </main>
 
   <div id="toast" class="toast"></div>
-
-  <script type="module" src="../js/theme.js"></script>
   <script type="module" src="../js/sign-up.js"></script>
 </body>
 </html>

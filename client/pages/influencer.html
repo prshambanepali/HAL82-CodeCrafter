@@ -3,52 +3,154 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Influencer Dashboard</title>
-  <link rel="stylesheet" href="../assets/css/styles.css"/>
+  <title>Influencer Profile • UdyamTank</title>
+  <link rel="stylesheet" href="/client/assets/css/influencer.css"/>
 </head>
-<body>
-  <section class="dashboard-wrapper">
-    <div class="dashboard-card">
-      <div class="dash-top">
-        <div>
-          <h2 class="dash-title">Influencer Home</h2>
-          <p id="status" class="dash-sub">Loading...</p>
-        </div>
-        <button id="logout" class="btn logout-btn">Logout</button>
-      </div>
+<body class="inf">
 
-      <div class="profile-box">
-        <img id="avatar" alt="avatar" />
-        <div class="profile-meta">
-          <div id="name" class="name">—</div>
-          <div id="email" class="email">—</div>
-          <div id="role" class="provider">—</div>
-        </div>
-      </div>
+  <!-- Top Nav -->
+  <header class="inf-nav">
+    <div class="inf-nav-inner">
+      <a class="inf-brand" href="#">
+        <img src="../../logo.jpg" width="100" height="100">
+        <span class="inf-brand-name">UdyamTank</span>
+      </a>
 
-      <div class="dashboard-grid">
-        <div class="dash-panel">
-          <h3>Influencer tools</h3>
-          <p>Find collaboration deals, track campaigns, and promote startups.</p>
-          <div class="actions">
-            <a class="action" href="#">Collaboration Deals</a>
-            <a class="action" href="#">Campaign Tracker</a>
-            <a class="action" href="#">My Media Kit</a>
-          </div>
-        </div>
-
-        <div class="dash-panel">
-          <h3>Quick info</h3>
-          <div class="info">
-            <div class="info-row"><span>Role</span><b>INFLUENCER</b></div>
-            <div class="info-row"><span>Status</span><b>Active</b></div>
-          </div>
-        </div>
+      <div class="inf-nav-actions">
+        <a class="inf-link" href="#">Dashboard</a>
+        <button class="inf-icon" type="button" aria-label="Toggle theme">🌙</button>
+         <button id="logout" class="inv-logout">Logout</button>
       </div>
     </div>
-  </section>
+  </header>
 
-  <div id="toast" class="toast"></div>
-  <script type="module" src="../js/role-dashboard.js"></script>
+  <main class="inf-wrap">
+
+    <!-- Profile Card -->
+    <section class="profile-card">
+      <div class="profile-left">
+        <div class="avatar-wrap">
+          <div class="avatar">
+            <span>RK</span>
+          </div>
+          <div class="verified">✓</div>
+        </div>
+
+        <div class="profile-meta">
+          <h1 class="profile-name">Riya Kapoor</h1>
+          <div class="profile-handle">@riyakapoor.tech</div>
+          <p class="profile-bio">
+            Making tech simple &amp; fun. Reviews, tutorials &amp; startup stories.
+          </p>
+
+          <div class="profile-chips">
+            <span class="chip pink">Tech &amp; Startups</span>
+            <span class="chip green"><span class="dot"></span> Available for Collaboration</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reach -->
+    <section class="section-card">
+      <div class="section-title">REACH</div>
+
+      <div class="reach-grid">
+        <article class="reach-item">
+          <div class="reach-num">524K</div>
+          <div class="reach-label">TOTAL FOLLOWERS</div>
+          <div class="reach-sub up">↑ 12% this month</div>
+        </article>
+
+        <article class="reach-item">
+          <div class="reach-num">4.8%</div>
+          <div class="reach-label">ENGAGEMENT RATE</div>
+          <div class="reach-sub good">Above average</div>
+        </article>
+
+        <article class="reach-item">
+          <div class="reach-num">89K</div>
+          <div class="reach-label">AVG. VIEWS/POST</div>
+          <div class="reach-sub up">↑ 8% vs last month</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Platforms -->
+    <section class="section-card">
+      <div class="section-title">PLATFORMS</div>
+
+      <div class="platform-grid">
+        <article class="platform-item">
+          <div class="plat-ic ig">◎</div>
+          <div>
+            <div class="plat-name">Instagram</div>
+            <div class="plat-sub">312K followers</div>
+          </div>
+        </article>
+
+        <article class="platform-item">
+          <div class="plat-ic yt">▶</div>
+          <div>
+            <div class="plat-name">YouTube</div>
+            <div class="plat-sub">178K subscribers</div>
+          </div>
+        </article>
+
+        <article class="platform-item">
+          <div class="plat-ic tw">𝕏</div>
+          <div>
+            <div class="plat-name">Twitter</div>
+            <div class="plat-sub">34K followers</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Recent Content -->
+    <section class="section-card">
+      <div class="section-title">RECENT CONTENT</div>
+
+      <div class="content-grid">
+        <div class="content-tile tile-pink">
+          <div class="tile-ic">🖼</div>
+        </div>
+        <div class="content-tile tile-blue">
+          <div class="tile-ic">📹</div>
+        </div>
+        <div class="content-tile tile-green">
+          <div class="tile-ic">🖼</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services-card">
+      <div class="services-head">
+        <div class="section-title">SERVICES</div>
+
+        <div class="service-pills">
+          <span class="pill">🖼 Sponsored Post</span>
+          <span class="pill">🎥 Video Review</span>
+          <span class="pill">💬 Story Mention</span>
+          <span class="pill">📅 Event Hosting</span>
+          <span class="pill">🔴 Live Stream</span>
+        </div>
+      </div>
+
+      <div class="services-foot">
+        <div class="resp">
+          <span class="resp-dot"></span>
+          Usually responds within 6 hours
+        </div>
+
+        <button class="hire-btn" type="button">
+          <span class="hire-ic">◇</span>
+          Hire Me
+        </button>
+      </div>
+    </section>
+
+  </main>
 </body>
 </html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Campaign • UdyamTank</title>
+  <link rel="stylesheet" href="../assets/css/styles.css"/>
+</head>
+<body class="camp">
+
+  <!-- Top Nav (reuse your theme style) -->
+  <header class="dashpro-nav">
+    <div class="dashpro-nav-inner">
+      <a class="dashpro-brand" href="../index.html">
+        <span>UdyamTank</span>
+      </a>
+
+      <div class="dashpro-actions">
+        <a class="dashpro-link" href="./investor.html">Dashboard</a>
+        <button class="dashpro-icon" type="button">🌙</button>
+        <button id="logout" class="btn dashpro-logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="camp-wrap">
+    <a class="camp-back" href="./investor.html">← Back to Investor Dashboard</a>
+
+    <!-- HERO -->
+    <section class="camp-hero" id="hero">
+      <div class="camp-hero-cover" id="cover"></div>
+      <div class="camp-hero-overlay">
+        <div class="camp-hero-badges">
+          <span class="badge active">Active</span>
+          <span class="badge verified">Verified</span>
+          <span class="badge tag" id="tagBadge">Startup</span>
+        </div>
+
+        <h1 class="camp-hero-title" id="campTitle">Loading...</h1>
+        <p class="camp-hero-sub" id="campSub">Please wait</p>
+      </div>
+    </section>
+
+    <!-- LAYOUT -->
+    <section class="camp-grid">
+
+      <!-- LEFT -->
+      <div class="camp-main">
+
+        <!-- FUNDING CARD -->
+        <div class="camp-card2">
+          <div class="camp-money-row">
+            <div>
+              <div class="camp-money" id="raised">$0</div>
+              <div class="camp-muted">raised of <span id="goal">$100,000</span> goal</div>
+            </div>
+            <div class="camp-pct" id="pct">0%</div>
+          </div>
+
+          <div class="camp-progress">
+            <span id="bar" style="width:0%"></span>
+          </div>
+
+          <div class="camp-meta2">
+            <span class="meta-pill">👥 <span id="investors">0</span> investors</span>
+            <span class="meta-pill">⏳ <span id="daysLeft">30</span> days left</span>
+            <span class="meta-pill">💵 Min. <span id="minInv">$250</span></span>
+          </div>
+
+          <button class="camp-invest-btn">Invest Now</button>
+        </div>
+        <div id="analysisSection" class="analysis-box"></div>
+        <!-- ABOUT -->
+        <div class="camp-card2">
+          <h3 class="camp-h3">About this Campaign</h3>
+          <p class="camp-text" id="about"></p>
+          <p class="camp-text" id="about2"></p>
+        </div>
+
+        <!-- COMPANY DETAILS -->
+        <div class="camp-card2">
+          <h3 class="camp-h3">Company Details</h3>
+          <div class="camp-details">
+            <div class="detail">📍 <span id="location">—</span></div>
+            <div class="detail">📅 Founded <span id="founded">—</span></div>
+            <div class="detail">👥 <span id="teamCount">—</span> team members</div>
+            <div class="detail">🌐 <a id="website" href="#" target="_blank" rel="noreferrer">Website</a></div>
+          </div>
+        </div>
+
+        <!-- REVENUE HISTORY -->
+        <div class="camp-card2">
+          <h3 class="camp-h3">Revenue History</h3>
+          <div class="rev-chart" id="revChart"></div>
+        </div>
+
+        <!-- FUNDING TRANCHES -->
+        <div class="camp-card2">
+          <div class="tr-top">
+            <h3 class="camp-h3">Funding Tranches</h3>
+            <span class="tr-pill" id="trStatus">1/3 released</span>
+          </div>
+
+          <div class="tr-progress">
+            <span id="trBar" style="width:33%"></span>
+          </div>
+
+          <div id="tranches"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <aside class="camp-side">
+
+        <!-- PREDICTED RETURN -->
+        <div class="camp-card2 camp-green">
+          <div class="camp-side-title">📈 Predicted Return</div>
+          <div class="camp-side-big" id="returnRange">12% – 35%</div>
+          <div class="camp-muted">Based on market signals. Returns not guaranteed.</div>
+        </div>
+
+        <!-- RISK -->
+        <div class="camp-card2">
+          <div class="camp-side-title">Risk Assessment</div>
+          <div class="risk-row">
+            <div class="risk-bar"><span id="riskBar" style="width:30%"></span></div>
+            <div class="risk-score">
+              <div class="risk-num" id="riskScore">28</div>
+              <div class="risk-label" id="riskLabel">Low Risk</div>
+            </div>
+          </div>
+          <div class="risk-scale">
+            <span>Low</span><span>Medium</span><span>High</span>
+          </div>
+        </div>
+
+        <!-- REWARD TIERS -->
+        <div class="camp-card2">
+          <div class="camp-side-title">Reward Tiers</div>
+          <div id="rewards"></div>
+        </div>
+
+      </aside>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="../js/campaign.js"></script>
+</body>
+</html>
