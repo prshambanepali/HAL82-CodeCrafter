@@ -1,8 +1,19 @@
-import { listPosts } from "./posts.js";
-import { fetchMe, getToken, clearSession } from "./auth.js";
+// ../js/campaign.js
+// ✅ NO BACKEND campaign page (localStorage)
+// - Reads pitch from ut_pitches using ?id=...
+// - Tracks investments in ut_pitch_investments
+// - Raised = investment only (NOT revenue), investors count = unique investors
+// - Shows analysis in #analysisSection
+
+import { getToken, clearSession } from "./auth.js";
 import { toast } from "./ui.js";
 
-if (!getToken()) window.location.href = "../index.html";
+/* =====================================================
+   AUTH GUARD + LOGOUT
+===================================================== */
+if (!getToken()) {
+  window.location.href = "../index.html";
+}
 
 document.getElementById("logout")?.addEventListener("click", () => {
   clearSession();
@@ -10,6 +21,22 @@ document.getElementById("logout")?.addEventListener("click", () => {
   setTimeout(() => (window.location.href = "../index.html"), 400);
 });
 
+/* =====================================================
+   LOCAL STORAGE KEYS
+===================================================== */
+const LS = {
+  session: "ut_session",
+  pitches: "ut_pitches",
+  investments: "ut_pitch_investments",
+  // Shape:
+  // ut_pitch_investments = {
+  //   [pitchId]: { raised: number, investorsBy: { [email]: true } }
+  // }
+};
+
+/* =====================================================
+   HELPERS
+===================================================== */
 function escapeHtml(s) {
   return String(s || "")
     .replaceAll("&", "&amp;")
@@ -19,20 +46,17 @@ function escapeHtml(s) {
     .replaceAll("'", "&#039;");
 }
 
-function getIdFromUrl() {
-  const u = new URL(window.location.href);
-  return u.searchParams.get("id");
+function readJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
 }
 
-function extractPitchJson(bodyText) {
-  const body = String(bodyText || "");
-  const m = body.match(/---PITCH_JSON---\s*([\s\S]*?)\s*---END_PITCH_JSON---/);
-  if (!m) return null;
-  try {
-    return JSON.parse(m[1]);
-  } catch {
-    return null;
-  }
+function writeJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
 }
 
 function fmtMoney(n) {
@@ -47,6 +71,45 @@ function clampPct(p) {
   return Math.max(0, Math.min(100, x));
 }
 
+function getIdFromUrl() {
+  const u = new URL(window.location.href);
+  return u.searchParams.get("id");
+}
+
+// MUST match investor-page.js local id generator
+function makeIdFromPitch(p, idx) {
+  const t = p?.createdAt || "";
+  const name = p?.startup?.name || "startup";
+  const safeName = String(name)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-");
+  const safeTime = String(t).replace(/[^0-9a-z]+/gi, "");
+  return `ls-${safeName}-${safeTime || idx}`;
+}
+
+// Converts "$750,000 Seed Round" / "100K" / "250k" → number
+function parseFundingGoal(fundingStr) {
+  const s = String(fundingStr || "")
+    .toUpperCase()
+    .replaceAll(",", "")
+    .replaceAll("$", "")
+    .trim();
+
+  if (!s) return 100000;
+
+  const km = s.match(/(\d+(\.\d+)?)(\s*)(K|M)/);
+  if (km) {
+    const base = Number(km[1]);
+    const mult = km[4] === "M" ? 1_000_000 : 1_000;
+    return Math.round(base * mult);
+  }
+
+  const n = s.match(/(\d{3,})/);
+  if (n) return Number(n[1]);
+
+  return 100000;
+}
+
 function riskLabel(score) {
   const s = Number(score) || 0;
   if (s <= 33) return "Low Risk";
@@ -54,88 +117,59 @@ function riskLabel(score) {
   return "High Risk";
 }
 
-function defaultPitchFromPost(post) {
-  // fallback if post body isn't JSON-marked
+/* =====================================================
+   INVESTMENT STATE (LOCAL)
+===================================================== */
+function getInvState() {
+  const s = readJSON(LS.investments, {});
+  return s && typeof s === "object" ? s : {};
+}
+
+function getCampaignInv(id) {
+  const all = getInvState();
+  const row = all[id];
+  if (!row) return { raised: 0, investorsBy: {} };
+
   return {
-    startup: {
-      name: post.title || "Startup Pitch",
-      description: post.body || "",
-      market: "Startup",
-      revenueModel: "—",
-      funding: "100K",
-      teamExp: "—",
-      location: "—",
-      founded: "—",
-      teamCount: 3,
-      website: "#",
-      coverUrl: "",
-    },
-    metrics: {
-      goal: 100000,
-      raised: 0,
-      investors: 0,
-      daysLeft: 30,
-      minInvestment: 250,
-    },
-    analysis: {
-      expectedReturnMin: 12,
-      expectedReturnMax: 35,
-      riskScore: 28,
-      revenueHistory: [1000, 1800, 2600], // year1..year3
-      tranches: [
-        {
-          title: "Tranche 1",
-          amount: 250000,
-          pct: 33,
-          status: "Released",
-          note: "Build MVP + onboard clients",
-        },
-        {
-          title: "Tranche 2",
-          amount: 250000,
-          pct: 33,
-          status: "Pending",
-          note: "Reach ARR milestone",
-        },
-        {
-          title: "Tranche 3",
-          amount: 250000,
-          pct: 34,
-          status: "Locked",
-          note: "Series A commitment",
-        },
-      ],
-      rewards: [
-        {
-          label: "Early Access",
-          price: 250,
-          desc: "Priority access + updates",
-        },
-        {
-          label: "Revenue Share",
-          price: 5000,
-          desc: "0.1% revenue share (3 years)",
-        },
-        {
-          label: "Funding Investor Package",
-          price: 25000,
-          desc: "0.5% rev share + advisory seat",
-        },
-      ],
-    },
+    raised: Number(row.raised || 0),
+    investorsBy:
+      row.investorsBy && typeof row.investorsBy === "object"
+        ? row.investorsBy
+        : {},
   };
 }
 
+function setCampaignInv(id, data) {
+  const all = getInvState();
+  all[id] = {
+    raised: Number(data.raised || 0),
+    investorsBy:
+      data.investorsBy && typeof data.investorsBy === "object"
+        ? data.investorsBy
+        : {},
+  };
+  writeJSON(LS.investments, all);
+}
+
+function investorCountFrom(inv) {
+  return Object.keys(inv.investorsBy || {}).length;
+}
+
+/* =====================================================
+   SMALL UI RENDERERS (SVG CHART + LISTS)
+===================================================== */
 function renderRevenueChart(arr) {
   const el = document.getElementById("revChart");
-  const a = Array.isArray(arr) && arr.length ? arr : [1000, 1500, 2200];
+  if (!el) return;
+
+  const a =
+    Array.isArray(arr) && arr.length ? arr : [12000, 18000, 24000, 30000];
   const max = Math.max(...a, 1);
 
-  // Simple SVG line chart (no libs)
   const w = 640,
     h = 220,
     pad = 26;
-  const step = (w - pad * 2) / (a.length - 1);
+  const step = a.length > 1 ? (w - pad * 2) / (a.length - 1) : 1;
 
   const pts = a
     .map((v, i) => {
@@ -148,9 +182,8 @@ function renderRevenueChart(arr) {
   el.innerHTML = `
     <svg viewBox="0 0 ${w} ${h}" class="rev-svg" aria-label="Revenue chart">
       <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3" />
-      <polyline points="${pts} ${w - pad},${h - pad} ${pad},${
-    h - pad
-  }" fill="currentColor" opacity="0.10" />
+      <polyline points="${pts} ${w - pad},${h - pad} ${pad},${h - pad}"
+        fill="currentColor" opacity="0.10" />
       ${a
         .map((v, i) => {
           const x = pad + i * step;
@@ -158,21 +191,14 @@ function renderRevenueChart(arr) {
           return `<circle cx="${x}" cy="${y}" r="4" fill="currentColor" />`;
         })
         .join("")}
-      <text x="${pad}" y="${
-    h - 8
-  }" font-size="12" fill="rgba(15,23,42,.55)">Year 1</text>
-      <text x="${w / 2}" y="${
-    h - 8
-  }" font-size="12" fill="rgba(15,23,42,.55)" text-anchor="middle">Year 2</text>
-      <text x="${w - pad}" y="${
-    h - 8
-  }" font-size="12" fill="rgba(15,23,42,.55)" text-anchor="end">Year 3</text>
     </svg>
   `;
 }
 
 function renderTranches(tr) {
   const box = document.getElementById("tranches");
+  if (!box) return;
+
   const arr = Array.isArray(tr) ? tr : [];
   box.innerHTML = arr
     .map((t, idx) => {
@@ -188,68 +214,66 @@ function renderTranches(tr) {
         status === "Released" ? "✅" : status === "Pending" ? "🕒" : "🔒";
 
       return `
-      <div class="tr-item">
-        <div class="tr-ic">${ic}</div>
-        <div class="tr-mid">
-          <div class="tr-title">${escapeHtml(
-            t.title || `Tranche ${idx + 1}`
-          )}</div>
-          <div class="tr-desc">${escapeHtml(t.note || "")}</div>
-          ${pill}
+        <div class="tr-item">
+          <div class="tr-ic">${ic}</div>
+          <div class="tr-mid">
+            <div class="tr-title">${escapeHtml(
+              t.title || `Tranche ${idx + 1}`
+            )}</div>
+            <div class="tr-desc">${escapeHtml(t.note || "")}</div>
+            ${pill}
+          </div>
+          <div class="tr-amt">${fmtMoney(
+            t.amount || 0
+          )} <span class="tr-pct">(${t.pct || 0}%)</span></div>
         </div>
-        <div class="tr-amt">${fmtMoney(t.amount || 0)} <span class="tr-pct">(${
-        t.pct || 0
-      }%)</span></div>
-      </div>
-    `;
+      `;
     })
     .join("");
 }
 
 function renderRewards(arr) {
   const el = document.getElementById("rewards");
+  if (!el) return;
+
   const rewards = Array.isArray(arr) ? arr : [];
   el.innerHTML = rewards
     .map(
       (r) => `
-    <div class="rw">
-      <div class="rw-top">
-        <span class="rw-chip">${escapeHtml(r.label || "Tier")}</span>
-        <span class="rw-price">${fmtMoney(r.price || 0)}</span>
+      <div class="rw">
+        <div class="rw-top">
+          <span class="rw-chip">${escapeHtml(r.label || "Tier")}</span>
+          <span class="rw-price">${fmtMoney(r.price || 0)}</span>
+        </div>
+        <div class="rw-desc">${escapeHtml(r.desc || "")}</div>
       </div>
-      <div class="rw-desc">${escapeHtml(r.desc || "")}</div>
-    </div>
-  `
+    `
     )
     .join("");
 }
 
-function applyPitch(pitch, post) {
+/* =====================================================
+   MAIN RENDER
+===================================================== */
+let CURRENT_ID = null;
+let CURRENT_PITCH = null;
+
+function applyPitchToPage(pitch) {
   const s = pitch.startup || {};
-  const m = pitch.metrics || {};
+  const m = pitch.metrics_input || {};
   const a = pitch.analysis || {};
 
-  // hero
-  document.getElementById("campTitle").textContent =
-    s.name || post.title || "Campaign";
-  document.getElementById("campSub").textContent = s.description
-    ? s.description
-    : post.body || "—";
-
+  // HERO
+  document.getElementById("campTitle").textContent = s.name || "Campaign";
+  document.getElementById("campSub").textContent = s.description || "—";
   document.getElementById("tagBadge").textContent = s.market || "Startup";
 
-  const cover = document.getElementById("cover");
-  if (s.coverUrl) {
-    cover.style.backgroundImage = `url("${s.coverUrl}")`;
-    cover.classList.add("has-img");
-  } else {
-    cover.style.backgroundImage = "";
-    cover.classList.remove("has-img");
-  }
-
-  // funding
-  const goal = Number(m.goal ?? 100000);
-  const raised = Number(m.raised ?? 0);
+  // FUNDING (IMPORTANT FIX)
+  // ✅ Raised must be based on investments only, not revenue.
+  const goal = parseFundingGoal(s.funding);
+  const inv = getCampaignInv(CURRENT_ID);
+  const raised = Number(inv.raised || 0);
+  const investors = investorCountFrom(inv);
   const pct = clampPct(goal ? (raised / goal) * 100 : 0);
 
   document.getElementById("raised").textContent = fmtMoney(raised);
@@ -257,93 +281,175 @@ function applyPitch(pitch, post) {
   document.getElementById("pct").textContent = `${Math.round(pct)}%`;
   document.getElementById("bar").style.width = `${pct}%`;
 
-  document.getElementById("investors").textContent = String(m.investors ?? 0);
-  document.getElementById("daysLeft").textContent = String(m.daysLeft ?? 30);
-  document.getElementById("minInv").textContent = fmtMoney(
-    m.minInvestment ?? 250
-  );
+  document.getElementById("investors").textContent = String(investors);
 
-  // about
-  document.getElementById("about").textContent =
-    s.description || post.body || "—";
+  // Optional defaults
+  document.getElementById("daysLeft").textContent = "30";
+  document.getElementById("minInv").textContent = "Rs 250";
+
+  // ABOUT
+  document.getElementById("about").textContent = s.description || "—";
   document.getElementById("about2").textContent =
-    s.longDescription ||
-    "Founded by passionate builders with a clear growth path and measurable traction.";
+    "Funding supports product development, customer acquisition, and growth milestones.";
 
-  // company
-  document.getElementById("location").textContent = s.location || "—";
-  document.getElementById("founded").textContent = s.founded || "—";
-  document.getElementById("teamCount").textContent = String(s.teamCount ?? 3);
-
+  // Company details (optional placeholders)
+  document.getElementById("location").textContent = "—";
+  document.getElementById("founded").textContent = "—";
+  document.getElementById("teamCount").textContent = "3";
   const web = document.getElementById("website");
-  if (s.website && s.website !== "#") {
-    web.href = s.website;
-    web.textContent = "Website ↗";
-  } else {
-    web.href = "#";
-    web.textContent = "Website";
-  }
+  web.href = "#";
+  web.textContent = "Website";
 
-  // return + risk
-  const minR = Number(a.expectedReturnMin ?? 12);
-  const maxR = Number(a.expectedReturnMax ?? 35);
-  document.getElementById("returnRange").textContent = `${minR}% – ${maxR}%`;
+  // Predicted return + risk (use marketScore if present)
+  document.getElementById("returnRange").textContent = "Up to 25% return";
 
-  const risk = Number(a.riskScore ?? 28);
+  const risk = Number(100 - a.marketScore ?? 28);
   document.getElementById("riskScore").textContent = String(risk);
   document.getElementById("riskLabel").textContent = riskLabel(risk);
   document.getElementById("riskBar").style.width = `${clampPct(risk)}%`;
 
-  // charts / lists
-  renderRevenueChart(a.revenueHistory);
-  renderTranches(a.tranches);
-  renderRewards(a.rewards);
-  // Show analysis from backend if exists
-  // if (pitch.analysis) {
-  //   document.getElementById("analysisSection").innerHTML = `
-  //     <div><b>Market Score:</b> ${pitch.analysis.marketScore}</div>
-  //     <div><b>Growth Rate:</b> ${pitch.analysis.growthRate}%</div>
-  //     <div><b>Burn Rate:</b> $${pitch.analysis.burnRate}</div>
-  //     <div><b>Runway:</b> ${pitch.analysis.runwayMonths} months</div>
-  //     <div><b>Expected Profit:</b> $${pitch.analysis.expectedProfit}</div>
-  //     <div><b>12m Forecast:</b> $${pitch.analysis.forecast12mRevenue}</div>
-  //   `;
-  // }
-}
+  // Revenue chart / tranches / rewards (use defaults if none stored)
+  renderRevenueChart(a.revenueHistory || [12000, 18000, 24000, 30000]);
+  renderTranches(
+    a.tranches || [
+      {
+        title: "Tranche 1",
+        amount: Math.round(goal * 0.33),
+        pct: 33,
+        status: "Released",
+        note: "MVP + initial user onboarding",
+      },
+      {
+        title: "Tranche 2",
+        amount: Math.round(goal * 0.33),
+        pct: 33,
+        status: "Pending",
+        note: "Revenue and retention milestones",
+      },
+      {
+        title: "Tranche 3",
+        amount: goal - Math.round(goal * 0.66),
+        pct: 34,
+        status: "Locked",
+        note: "Scale growth and partnerships",
+      },
+    ]
+  );
+  renderRewards(
+    a.rewards || [
+      { label: "Early Access", price: 250, desc: "Priority access + updates" },
+      {
+        label: "Revenue Share",
+        price: 5000,
+        desc: "0.1% revenue share (3 years)",
+      },
+      {
+        label: "Investor Package",
+        price: 25000,
+        desc: "0.5% rev share + advisory seat",
+      },
+    ]
+  );
 
-async function main() {
-  try {
-    const me = await fetchMe();
-    if (String(me.role).toUpperCase() !== "INVESTOR") {
-      window.location.href = "./unauthorized.html";
-      return;
-    }
-
-    const id = getIdFromUrl();
-    if (!id) {
-      toast("Missing campaign id", "error");
-      window.location.href = "./investor.html";
-      return;
-    }
-
-    // We use listPosts and find by id (safe even if /posts/:id doesn't exist)
-    const data = await listPosts();
-    const post = (data.posts || []).find((x) => String(x.id) === String(id));
-
-    if (!post) {
-      toast("Campaign not found", "error");
-      window.location.href = "./investor.html";
-      return;
-    }
-
-    const pitch = extractPitchJson(post.body);
-    applyPitch(pitch || defaultPitchFromPost(post), post);
-  } catch (e) {
-    console.error(e);
-    toast("Session expired or API error. Please login again.", "error");
-    clearSession();
-    setTimeout(() => (window.location.href = "../index.html"), 800);
+  // ✅ ANALYSIS SECTION (shows startup metrics + computed analysis)
+  const analysisBox = document.getElementById("analysisSection");
+  if (analysisBox) {
+    analysisBox.innerHTML = `
+      <div><b>Market Score:</b> ${escapeHtml(a.marketScore ?? "—")}</div>
+      <div><b>Growth Rate:</b> ${escapeHtml(a.growthRate ?? "—")}%</div>
+      <div><b>Burn Rate:</b> $${escapeHtml(a.burnRate ?? "—")}</div>
+      <div><b>Runway:</b> ${
+        a.runwayMonths === null || a.runwayMonths === undefined
+          ? "Not burning (profit)"
+          : `${escapeHtml(a.runwayMonths)} months`
+      }</div>
+      <div><b>Expected Profit:</b> $${escapeHtml(a.expectedProfit ?? "—")}</div>
+      <div><b>12m Forecast:</b> $${escapeHtml(
+        a.forecast12mRevenue ?? "—"
+      )}</div>
+      <hr style="margin:12px 0; opacity:.2;">
+      <div><b>TAM:</b> ${escapeHtml(m.tam ?? "—")}</div>
+      <div><b>CAGR:</b> ${escapeHtml(m.cagr ?? "—")}%</div>
+      <div><b>This Month Revenue:</b> $${escapeHtml(
+        m.currentRevenue ?? "—"
+      )}</div>
+    `;
+    analysisBox.style.display = "block";
   }
 }
 
-main();
+/* =====================================================
+   INVEST NOW
+===================================================== */
+function initInvestButton() {
+  const btn = document.querySelector(".camp-invest-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    const amtStr = prompt("Enter investment amount (USD):", "250");
+    if (amtStr == null) return;
+
+    const amt = Number(amtStr);
+    if (!Number.isFinite(amt) || amt <= 0) {
+      toast("Enter a valid amount", "error");
+      return;
+    }
+
+    const me = readJSON(LS.session, null);
+    const email = me?.email || "investor@local";
+
+    const inv = getCampaignInv(CURRENT_ID);
+    inv.raised = Number(inv.raised || 0) + amt;
+    inv.investorsBy[email] = true; // ✅ unique investor per email
+    setCampaignInv(CURRENT_ID, inv);
+
+    toast(`Invested ${fmtMoney(amt)} ✅`, "success");
+
+    // Re-render funding section + investors count
+    applyPitchToPage(CURRENT_PITCH);
+  });
+}
+
+/* =====================================================
+   MAIN
+===================================================== */
+function main() {
+  const me = readJSON(LS.session, null);
+  if (!me || String(me.role || "").toUpperCase() !== "INVESTOR") {
+    window.location.href = "./unauthorized.html";
+    return;
+  }
+
+  const id = getIdFromUrl();
+  if (!id) {
+    toast("Missing campaign id", "error");
+    window.location.href = "./investor.html";
+    return;
+  }
+
+  const pitches = readJSON(LS.pitches, []);
+  const found = (Array.isArray(pitches) ? pitches : []).find((p, idx) => {
+    return makeIdFromPitch(p, idx) === id;
+  });
+
+  if (!found) {
+    toast("Campaign not found", "error");
+    window.location.href = "./investor.html";
+    return;
+  }
+
+  CURRENT_ID = id;
+  CURRENT_PITCH = found;
+
+  applyPitchToPage(found);
+  initInvestButton();
+
+  // Keep page updated if another tab invests
+  window.addEventListener("storage", (e) => {
+    if (e.key === LS.investments) {
+      applyPitchToPage(CURRENT_PITCH);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", main);
