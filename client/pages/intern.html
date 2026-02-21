@@ -258,25 +258,7 @@
 
   </main>
 
-  <!-- Small tab switch script -->
-  <script>
-    const tabs = document.querySelectorAll(".tab-btn");
-    const panes = {
-      profile: document.getElementById("tab-profile"),
-      browse: document.getElementById("tab-browse"),
-      apps: document.getElementById("tab-apps"),
-    };
-
-    tabs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabs.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        Object.values(panes).forEach(p => p.classList.remove("show"));
-        panes[btn.dataset.tab].classList.add("show");
-      });
-    });
-  </script>
-
+  
+  <script type="module" src="../js/intern.js"></script>
 </body>
 </html>

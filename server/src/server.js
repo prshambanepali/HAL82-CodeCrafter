@@ -33,7 +33,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/posts", postRoutes);
 
 // ✅ campaigns endpoints
-app.use("/api/campaigns", campaignsRoutes);
+app.use("/api/campaigns/", campaignsRoutes);
 
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);

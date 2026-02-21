@@ -20,7 +20,10 @@
       <div class="dashpro-actions">
         <a class="dashpro-link" href="#">Dashboard</a>
         <button class="dashpro-icon" type="button" aria-label="Toggle theme">🌙</button>
+        <button id="logout" class="btn dashpro-logout" type="button">Logout</button>
       </div>
+      <div class="actions">
+  
     </div>
   </header>
 
@@ -53,10 +56,16 @@
       </div>
 
       <div class="dashpro-hero-right">
-        <button class="btn btn-ghost" type="button">Edit Profile</button>
-        <button class="btn btn-primary" type="button">Share Pitch</button>
-        <button id="logout" class="btn dashpro-logout" type="button">Logout</button>
-      </div>
+      <button class="btn btn-ghost" type="button">Edit Profile</button>
+
+      <button class="btn btn-primary" type="button">Share Pitch</button>
+
+      <!-- ✅ NEW BUTTONS -->
+      <button class="btn btn-success" id="hireInternsBtn" type="button">Hire Interns</button>
+      <button class="btn btn-pink" id="hireInfluencersBtn" type="button">Hire Influencers</button>
+
+      
+    </div>
     </section>
 
     <!-- Pitch Overview -->
@@ -269,6 +278,42 @@
 
       </div>
     </section>
+      <section id="hireInternsSection" class="dashpro-section">
+    <div class="dashpro-section-title">
+      <h2>Hire Interns</h2>
+    </div>
+    <section id="hireInternsSection" class="dashpro-section">
+  <div class="dashpro-section-title">
+    <span class="sec-ic">👩‍💻</span>
+    <h2>Hire Interns</h2>
+  </div>
+
+  <p class="intern-muted-line">
+    Find talented interns to join your team. Profiles created by interns will appear here automatically.
+  </p>
+
+  <!-- ✅ ADD THIS -->
+  <div id="internCards" class="overview-grid"></div>
+</section>
+  </section>
+
+  <section id="hireInfluencersSection" class="dashpro-section">
+    <div class="dashpro-section-title">
+      <h2>Hire Influencers</h2>
+    </div>
+    <section id="hireInfluencersSection" class="dashpro-section">
+  <div class="dashpro-section-title">
+    <span class="sec-ic">📣</span>
+    <h2>Hire Influencers</h2>
+  </div>
+
+  <p class="intern-muted-line">
+    Influencer profiles created in Influencer Dashboard will appear here automatically.
+  </p>
+
+  <div id="influencerCards" class="overview-grid"></div>
+</section>
+  </section>
 
   </main>
 
