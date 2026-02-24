@@ -116,7 +116,7 @@
 
 ### Step 1: Clone the Repository
 
-git clone https://github.com/your-username/udyamtank.git
+git clone https://github.com/prshambanepali/udyamtank.git
 cd udyamtank
 
 ### Step 2: Setup Database
